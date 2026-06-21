@@ -10,10 +10,15 @@ Plan: **Claude Max 20x**. Idioma de conversación: **español**. Código y texto
 ---
 
 ## 1. Cómo quiero que trabajes
-- **Máxima velocidad, yo reviso el resultado.** Modo `acceptEdits`. No pidas permiso para editar archivos,
-  builds, tests, linters, `git add`/`commit`, ni comandos de lectura. Actúa.
-- **Pide confirmación SOLO para lo irreversible/externo** (forzado en settings → `ask`): `git push`, deploy,
-  `npm publish`, destructivo en base de datos.
+- **Máxima independencia.** Modo `bypassPermissions`: NO pidas permiso para nada rutinario (editar, builds,
+  tests, linters, commits, comandos de shell, lectura). Actúa de corrido sin pausas.
+- **El ÚNICO freno son las redes `deny` y `ask` del settings**, que se respetan aun en bypass:
+  - `deny` (bloqueo total, ni pregunta): borrar disco/home, `git push --force`.
+  - `ask` (lo único que me detiene y pregunta): `git push` / deploy a producción, `npm publish`,
+    y destructivo de DB (`DROP`, `TRUNCATE`, `DELETE FROM`, `supabase db reset`, `psql`, `reset --hard`).
+- Como doy "sí a todo", esos prompts existen solo para lo irreversible — cuando aparezca uno, es en serio.
+- **Independencia NO es descuido:** sigo aplicando los checklists de seguridad (§3) y escalabilidad (§4)
+  al cerrar cada plan, aunque no te pregunte paso a paso.
 - Cuando tengas suficiente para actuar, **actúa**; no listes opciones que no vas a tomar. Si dudas entre
   caminos, da **una recomendación**, no un menú.
 - **Reporta fiel:** si un test falla, dímelo con el output. Si saltaste un paso, dilo. No digas "listo" sin verificar.
