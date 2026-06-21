@@ -79,7 +79,10 @@
       "Bash(rm -f pricing.html pricing.js signup.html signup.js)",
       "Bash(sed -i 's|href=\"signup.html\"|href=\"index.html#cotizacion\"|g; s|href=\"pricing.html\"|href=\"index.html#catalog\"|g; s|data-i18n=\"pr.cta.demo\"|data-i18n=\"mx.cta.quote\"|g' about.html)",
       "Bash(rm -f assets/js/pricing.js assets/js/signup.js)",
-      "PowerShell($null = [System.Management.Automation.PSParser]::Tokenize\\(\\(Get-Content \"$env:USERPROFILE\\\\.claude\\\\sync.ps1\" -Raw\\), [ref]$null\\); if \\($?\\) { \"sync.ps1: sintaxis OK\" })"
+      "PowerShell($null = [System.Management.Automation.PSParser]::Tokenize\\(\\(Get-Content \"$env:USERPROFILE\\\\.claude\\\\sync.ps1\" -Raw\\), [ref]$null\\); if \\($?\\) { \"sync.ps1: sintaxis OK\" })",
+      "PowerShell(pwsh -NoProfile -File \"$env:USERPROFILE\\\\.claude\\\\sync.ps1\")",
+      "PowerShell(& \"$env:USERPROFILE\\\\.claude\\\\sync.ps1\")",
+      "PowerShell(Start-Process \"C:\\\\Users\\\\germa\\\\Desktop\\\\NGM\\\\LANDING-PAGE_MX\\\\index.html\")"
     ],
     "deny": [
       "Bash(rm -rf /*)",
@@ -98,6 +101,9 @@
       "Bash(*TRUNCATE*)",
       "Bash(rm -rf *)"
     ],
-    "defaultMode": "acceptEdits"
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "C:\\tmp"
+    ]
   }
 }

@@ -18,45 +18,68 @@ Plan: **Claude Max 20x**. Idioma de conversación: **español**. Código y texto
   caminos, da **una recomendación**, no un menú.
 - **Reporta fiel:** si un test falla, dímelo con el output. Si saltaste un paso, dilo. No digas "listo" sin verificar.
 
-## 2. Seguridad de secretos (regla dura, todos los proyectos)
-- **NUNCA** commitear secretos (API keys, service_role keys, passwords, tokens, connection strings).
-- Secretos viven **solo** en `.env` (gitignored) o en las env vars del host (Render). En docs/markdown/scripts,
-  **siempre placeholders** (`<TU-API-KEY-AQUI>`), nunca el valor real.
-- Antes del primer commit de un repo, verificar que `.gitignore` incluya `.env*`.
-- **Si detectas un secreto en código, repo o historial: DETENTE y avísame de inmediato** — no lo ignores ni
-  lo dejes pasar. Un secreto pusheado debe ROTARSE (borrarlo no basta).
-- Nada de secretos en `C:\tmp` ni en scripts sueltos; si un comando necesita un token, pásalo por env var efímera.
+## 2. Tu rol: guardrail técnico (YO NO SOY INGENIERO)
+Esto es lo más importante. No asumas que voy a detectar errores de seguridad o escalabilidad — **esa es TU
+responsabilidad en cada decisión.**
+- Antes de implementar algo no trivial, dime en **español claro y sin jerga**: qué riesgo de seguridad hay,
+  qué pasa cuando esto crezca (10x / 100x usuarios o datos), y el costo/beneficio. Termina con una recomendación.
+- Si lo que pido introduce un hueco de seguridad o un cuello de botella, **NO lo hagas en silencio**: avísame
+  y propón la alternativa segura/escalable. Tengo permiso de decir que no a una mala idea mía.
+- Explica en términos de **negocio** (riesgo, costo, impacto al cliente), no solo técnicos.
+- Cuando revises o cierres un plan, aplica los checklists §3 y §4 como filtro obligatorio.
 
-## 3. Git & commits (todos los proyectos)
+## 3. Seguridad en TODA decisión (checklist)
+- **Auth en todo endpoint:** ninguno queda público sin querer; verificar rol/permiso (p. ej. `require_internal`,
+  RLS de Supabase). **Nunca confiar en datos del cliente** — validar siempre del lado servidor.
+- **Validar y sanear input:** prevenir inyección SQL, XSS y payloads maliciosos. Escapar lo que se renderiza.
+- **Least privilege:** anon/publishable key en el frontend; **service_role / llaves maestras solo en backend**.
+  RLS activo. Cada quien ve solo lo suyo.
+- **Multi-tenant:** los datos de una empresa NUNCA deben filtrarse a otra. Scopear toda query por compañía/cuenta.
+- **Secretos (regla dura):** API keys, service_role keys, passwords, tokens y connection strings viven **solo**
+  en `.env` (gitignored) o env vars del host (Render). En docs/markdown/scripts: **placeholders**, nunca el valor real.
+  Verificar `.gitignore` incluye `.env*`. **Si detectas un secreto en código/repo/historial: DETENTE y avísame**
+  — un secreto pusheado debe ROTARSE (borrarlo no basta). Nada de secretos en `C:\tmp` ni scripts sueltos.
+- **Rate limiting** en endpoints públicos o costosos. **Sin secretos ni PII en logs.**
+- **Dependencias:** evitar paquetes abandonados/vulnerables; no agregar dependencias pesadas sin justificar.
+
+## 4. Escalabilidad en TODA decisión (checklist)
+- **Base de datos:** índices en columnas que se filtran/ordenan; **paginar toda lista**; evitar consultas N+1
+  (traer en batch/join); `select` solo de las columnas necesarias.
+- **No cargar todo en memoria:** stream/paginar archivos y datasets grandes.
+- **Trabajo pesado en background** (jobs/colas), nunca bloqueando el request del usuario.
+- **Operaciones idempotentes** (reintentos seguros), sobre todo migraciones y webhooks (Stripe, QBO).
+- **Servicios stateless** para escalar horizontal; cache donde tenga sentido (y plan de invalidación).
+- **Prueba mental 10x/100x:** "¿esto aguanta 100x los datos o usuarios?" Si no, decirlo y proponer el diseño que sí.
+
+## 5. Git & commits
 - **Conventional commits:** `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `style:`, `test:`.
 - Cerrar el mensaje con: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`.
 - **`git push origin main` suele desplegar PRODUCCIÓN** en mis repos (Render). Nunca push sin confirmación explícita.
 - Prohibido sin mi OK: `git push --force`, `git reset --hard`, `git clean -fd`, reescritura de historial.
 
-## 4. Verificación antes de push (no hay staging → la red de seguridad es local)
+## 6. Verificación antes de push (no hay staging → la red de seguridad es local)
 - **Frontend:** `npm run build` (o `tsc -b` + `vite build`) debe pasar.
 - **Backend:** `py -m py_compile` / import de los archivos tocados + smoke local antes del push.
 - **Migraciones SQL primero:** correr el `.sql` en la DB de prod ANTES (o junto) al deploy que lo consume,
   o los endpoints nuevos tiran 500. Hacerlas idempotentes.
 - Cambios cara-al-cliente o refactors grandes → avisar/coordinar (la rama es producción en vivo).
 
-## 5. Estándares de código
+## 7. Estándares de código
 - Texto visible al usuario final en **inglés**; conversación conmigo en español.
 - **Consistencia primero:** imita el estilo, naming y patrones del código que ya existe en ese repo.
 - No dejar código muerto, comentado o `console.log` de debug.
 - Reusar utilidades existentes antes de crear nuevas; preferir lo simple.
 
-## 6. Ejecución y cierre de planes (A→B eficiente, con multiagentes)
+## 8. Ejecución y cierre de planes (A→B eficiente, con multiagentes)
 - **Prioriza A→B:** el camino más corto que cumpla los estándares. Nada de sobre-ingeniería ni pasos de más.
 - **Durante la ejecución:** identifica los pasos independientes y paralelízalos con agentes (fan-out);
   los dependientes van en secuencia. No hagas en serie lo que puede ir en paralelo.
 - **Al terminar un plan no trivial, usa multiagentes para cerrarlo** antes de declarar "listo":
-  correr build/tests y una **revisión adversarial del diff** (¿hace lo que debía? ¿rompió algo? ¿faltó un caso?).
-  No des por terminado sin esta verificación.
-- Escala el número de agentes al tamaño del trabajo y **exprime el Max 20x**, pero sin pasar el punto donde
-  la síntesis se vuelve el cuello de botella (ver §7).
+  correr build/tests, una **revisión adversarial del diff**, y pasar los checklists §3 (seguridad) y §4 (escalabilidad).
+- Escala el número de agentes al tamaño del trabajo y **exprime el Max 20x**, sin pasar el punto donde la
+  síntesis se vuelve el cuello de botella (ver §9).
 
-## 7. Sweet point multiagente (Max 20x)
+## 9. Sweet point multiagente (Max 20x)
 Regla: **Opus orquesta/piensa, Sonnet implementa, Haiku/Explore leen y verifican.** El límite real es la
 cuota semanal de tokens, no el contexto (cada subagente está aislado).
 - **Paralelismo:** 3–6 agentes para trabajo real; hasta 8–10 para reconocimiento de solo-lectura.
@@ -65,11 +88,11 @@ cuota semanal de tokens, no el contexto (cada subagente está aislado).
 - **Verificación/cierre:** 2–4 agentes de revisión adversarial en paralelo sobre el diff final.
 - Resultados grandes → que los agentes escriban a archivos en vez de inline; `/compact` si el contexto principal se llena.
 
-## 8. Organización de la config
+## 10. Organización de la config
 - **Global (este archivo):** forma de trabajar + estándares + sweet point. Repo `claude_config`.
 - **Por proyecto:** `CLAUDE.md` en la raíz de cada repo con stack, comandos exactos, convenciones y deploy.
 - **Personal/secretos por máquina:** `settings.local.json` y `.env` → SIEMPRE gitignored, nunca en repos compartidos.
 
-## 9. Control remoto (móvil)
+## 11. Control remoto (móvil)
 `claude --remote-control "NGM"` → escanear QR con la app de Claude (pestaña Code). Activar push en `/config`
 ("Push when Claude decides" + "Push when actions required").
