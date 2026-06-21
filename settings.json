@@ -78,7 +78,8 @@
       "Bash(sed -i 's#href=\"signup.html\"#href=\"index.html#cotizacion\"#g; s#href=\"pricing.html\"#href=\"index.html#catalog\"#g; s#data-i18n=\"pr.cta.demo\"#data-i18n=\"mx.cta.quote\"#g' about.html)",
       "Bash(rm -f pricing.html pricing.js signup.html signup.js)",
       "Bash(sed -i 's|href=\"signup.html\"|href=\"index.html#cotizacion\"|g; s|href=\"pricing.html\"|href=\"index.html#catalog\"|g; s|data-i18n=\"pr.cta.demo\"|data-i18n=\"mx.cta.quote\"|g' about.html)",
-      "Bash(rm -f assets/js/pricing.js assets/js/signup.js)"
+      "Bash(rm -f assets/js/pricing.js assets/js/signup.js)",
+      "PowerShell($null = [System.Management.Automation.PSParser]::Tokenize\\(\\(Get-Content \"$env:USERPROFILE\\\\.claude\\\\sync.ps1\" -Raw\\), [ref]$null\\); if \\($?\\) { \"sync.ps1: sintaxis OK\" })"
     ],
     "deny": [
       "Bash(rm -rf /*)",

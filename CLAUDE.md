@@ -46,19 +46,30 @@ Plan: **Claude Max 20x**. Idioma de conversación: **español**. Código y texto
 - No dejar código muerto, comentado o `console.log` de debug.
 - Reusar utilidades existentes antes de crear nuevas; preferir lo simple.
 
-## 6. Sweet point multiagente (Max 20x)
-Regla: **Opus piensa, Haiku/Explore leen, Sonnet implementa.** El límite real es la cuota semanal de tokens,
-no el contexto (cada subagente está aislado).
+## 6. Ejecución y cierre de planes (A→B eficiente, con multiagentes)
+- **Prioriza A→B:** el camino más corto que cumpla los estándares. Nada de sobre-ingeniería ni pasos de más.
+- **Durante la ejecución:** identifica los pasos independientes y paralelízalos con agentes (fan-out);
+  los dependientes van en secuencia. No hagas en serie lo que puede ir en paralelo.
+- **Al terminar un plan no trivial, usa multiagentes para cerrarlo** antes de declarar "listo":
+  correr build/tests y una **revisión adversarial del diff** (¿hace lo que debía? ¿rompió algo? ¿faltó un caso?).
+  No des por terminado sin esta verificación.
+- Escala el número de agentes al tamaño del trabajo y **exprime el Max 20x**, pero sin pasar el punto donde
+  la síntesis se vuelve el cuello de botella (ver §7).
+
+## 7. Sweet point multiagente (Max 20x)
+Regla: **Opus orquesta/piensa, Sonnet implementa, Haiku/Explore leen y verifican.** El límite real es la
+cuota semanal de tokens, no el contexto (cada subagente está aislado).
 - **Paralelismo:** 3–6 agentes para trabajo real; hasta 8–10 para reconocimiento de solo-lectura.
 - **Tarea profunda (refactor/debug):** 1 hilo Opus + 2–3 `Explore` que le traen contexto.
 - **Tareas paralelas independientes:** fan-out de 4–6 implementadores Sonnet, aislados.
+- **Verificación/cierre:** 2–4 agentes de revisión adversarial en paralelo sobre el diff final.
 - Resultados grandes → que los agentes escriban a archivos en vez de inline; `/compact` si el contexto principal se llena.
 
-## 7. Organización de la config
+## 8. Organización de la config
 - **Global (este archivo):** forma de trabajar + estándares + sweet point. Repo `claude_config`.
 - **Por proyecto:** `CLAUDE.md` en la raíz de cada repo con stack, comandos exactos, convenciones y deploy.
 - **Personal/secretos por máquina:** `settings.local.json` y `.env` → SIEMPRE gitignored, nunca en repos compartidos.
 
-## 8. Control remoto (móvil)
+## 9. Control remoto (móvil)
 `claude --remote-control "NGM"` → escanear QR con la app de Claude (pestaña Code). Activar push en `/config`
 ("Push when Claude decides" + "Push when actions required").
