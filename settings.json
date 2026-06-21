@@ -74,7 +74,11 @@
       "WebSearch",
       "Bash(git init *)",
       "Bash(git config *)",
-      "Bash(git remote *)"
+      "Bash(git remote *)",
+      "Bash(sed -i 's#href=\"signup.html\"#href=\"index.html#cotizacion\"#g; s#href=\"pricing.html\"#href=\"index.html#catalog\"#g; s#data-i18n=\"pr.cta.demo\"#data-i18n=\"mx.cta.quote\"#g' about.html)",
+      "Bash(rm -f pricing.html pricing.js signup.html signup.js)",
+      "Bash(sed -i 's|href=\"signup.html\"|href=\"index.html#cotizacion\"|g; s|href=\"pricing.html\"|href=\"index.html#catalog\"|g; s|data-i18n=\"pr.cta.demo\"|data-i18n=\"mx.cta.quote\"|g' about.html)",
+      "Bash(rm -f assets/js/pricing.js assets/js/signup.js)"
     ],
     "deny": [
       "Bash(rm -rf /*)",
