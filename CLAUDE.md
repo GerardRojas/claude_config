@@ -9,6 +9,17 @@ Plan: **Claude Max 20x**. Idioma de conversación: **español**. Código y texto
 
 ---
 
+## 0. Handshake de verificación — VERSIÓN: NGM-CONFIG v1 (2026-06-21)
+Cuando German escriba `status`, `config?`, `¿md?` o `🟢`, responde EXACTAMENTE con esta línea (y nada de relleno):
+
+`🟢 NGM-CONFIG v1 cargado · independiente (bypass) · red deny/ask activa · guardrails §3 seguridad + §4 escalabilidad ON`
+
+- Si en esta máquina/sesión NO ves este archivo, **NO inventes la línea**: di claramente que el CLAUDE.md global
+  no está cargado. (Si no estuviera cargado, no conocerías la frase, así que es prueba real de carga.)
+- **Si subes la versión de este archivo, incrementa el número** (`v1` → `v2` ...) para distinguir qué config está activa.
+
+---
+
 ## 1. Cómo quiero que trabajes
 - **Máxima independencia.** Modo `bypassPermissions`: NO pidas permiso para nada rutinario (editar, builds,
   tests, linters, commits, comandos de shell, lectura). Actúa de corrido sin pausas.
