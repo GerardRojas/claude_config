@@ -1,0 +1,6 @@
+# Lista blanca: ignora TODO y solo permite los archivos de config portables.
+# Garantiza que transcripts, historial, secretos y settings.local nunca se suban.
+/*
+!CLAUDE.md
+!settings.json
+!.gitignore
