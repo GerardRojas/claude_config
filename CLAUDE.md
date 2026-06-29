@@ -9,10 +9,10 @@ Plan: **Claude Max 20x**. Idioma de conversación: **español**. Código y texto
 
 ---
 
-## 0. Handshake de verificación — VERSIÓN: NGM-CONFIG v1 (2026-06-21)
+## 0. Handshake de verificación — VERSIÓN: NGM-CONFIG v2 (2026-06-29)
 Cuando German escriba `status`, `config?`, `¿md?` o `🟢`, responde EXACTAMENTE con esta línea (y nada de relleno):
 
-`🟢 NGM-CONFIG v1 cargado · independiente (bypass) · red deny/ask activa · guardrails §3 seguridad + §4 escalabilidad ON`
+`🟢 NGM-CONFIG v2 cargado · independiente (bypass) · red deny/ask activa · guardrails §3 seguridad + §4 escalabilidad ON · /cierre pre-push listo`
 
 - Si en esta máquina/sesión NO ves este archivo, **NO inventes la línea**: di claramente que el CLAUDE.md global
   no está cargado. (Si no estuviera cargado, no conocerías la frase, así que es prueba real de carga.)
@@ -112,3 +112,16 @@ cuota semanal de tokens, no el contexto (cada subagente está aislado).
 ## 11. Control remoto (móvil)
 `claude --remote-control "NGM"` → escanear QR con la app de Claude (pestaña Code). Activar push en `/config`
 ("Push when Claude decides" + "Push when actions required").
+
+## 12. Skills más usadas y cierre pre-push (`/cierre`)
+Las skills son comandos expertos nativos (no hay que instalarlas). Las que uso de rutina:
+- **`/code-review`** — revisa el diff (bugs + limpieza). `high`/`max` = más cobertura. `ultra` = revisión multiagente en la nube (**facturada, solo la disparo yo manualmente**; Claude no puede lanzarla). `--comment` / `--fix`.
+- **`/security-review`** — revisión de seguridad del diff pendiente (cruza con §3).
+- **`/verify`** y **`/run`** — corren la app de verdad para confirmar que el cambio funciona.
+- **`/simplify`** — solo limpieza (reúso/simplificación), no caza bugs.
+- **`/deep-research`** — investigación multi-fuente verificada con citas. **`/claude-api`** — referencia de la API de Claude.
+
+**Flujo de cierre antes de cada push (no hay staging → §6):** comando **`/cierre [contexto]`** encadena:
+1) build/compile · 2) `/code-review high` · 3) `/security-review` + checklist §3 · 4) checklist escalabilidad §4 · 5) `/verify`.
+Cierra con resumen ✅/⚠️ y recordatorio de disparar `/code-review ultra` para pushes cara-al-cliente.
+El comando vive en `~/.claude/commands/cierre.md` (versionado en `claude_config` vía `sync.ps1`).

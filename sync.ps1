@@ -12,7 +12,7 @@
 $ErrorActionPreference = "Continue"
 $repo  = "https://github.com/GerardRojas/claude_config.git"
 $dir   = "$env:USERPROFILE\.claude"
-$files = @("CLAUDE.md", "settings.json", ".gitignore", "sync.ps1")
+$files = @("CLAUDE.md", "settings.json", ".gitignore", "sync.ps1", "commands")
 
 Set-Location $dir
 

@@ -1,6 +1,5 @@
 {
   "permissions": {
-    "defaultMode": "bypassPermissions",
     "allow": [
       "Bash(npm *)",
       "Bash(npx *)",
@@ -41,8 +40,7 @@
       "Bash(git push --force*)",
       "Bash(git push -f *)",
       "PowerShell(git push --force*)",
-      "Bash(mkfs*)",
-      "Bash(:(){*"
+      "Bash(mkfs*)"
     ],
     "ask": [
       "Bash(git push*)",
@@ -60,8 +58,10 @@
       "Bash(*TRUNCATE*)",
       "Bash(*DELETE FROM*)"
     ],
+    "defaultMode": "bypassPermissions",
     "additionalDirectories": [
       "C:\\tmp"
     ]
-  }
+  },
+  "agentPushNotifEnabled": true
 }
